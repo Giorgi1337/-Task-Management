@@ -18,6 +18,6 @@ public class User {
     private String username;
     private String email;
 
-    @OneToMany(mappedBy = "assignes")
+    @OneToMany(mappedBy = "assignee")
     private List<Task> tasks;
 }
