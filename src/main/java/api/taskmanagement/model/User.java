@@ -18,6 +18,6 @@ public class User {
     private String username;
     private String email;
 
-    @OneToMany(mappedBy = "assignee")
+    @OneToMany(mappedBy = "assignee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
 }
