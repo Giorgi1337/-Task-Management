@@ -23,11 +23,26 @@ public class TaskService {
 
     @Transactional
     public Task updateTask(int id, Task task) {
-        if (taskRepository.existsById(id)) {
-            task.setId(id);
-            return taskRepository.save(task);
-        }
-        throw new RuntimeException("Task not found");
+       Task existingTask = taskRepository.findById(id)
+               .orElseThrow(() -> new RuntimeException("Task not found"));
+
+       if (task.getTitle() != null) {
+           existingTask.setTitle(task.getTitle());
+       }
+       if (task.getDescription() != null) {
+           existingTask.setDescription(task.getDescription());
+       }
+       if (task.getStatus() != null) {
+           existingTask.setStatus(task.getStatus());
+       }
+       if (task.getPriority() != null) {
+           existingTask.setPriority(task.getPriority());
+       }
+       if (task.getDueDate() != null) {
+           existingTask.setDueDate(task.getDueDate());
+       }
+
+       return taskRepository.save(existingTask);
     }
 
     @Transactional
