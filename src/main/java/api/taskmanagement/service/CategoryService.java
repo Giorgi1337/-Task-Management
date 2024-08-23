@@ -23,11 +23,17 @@ public class CategoryService {
     }
 
     public Category updateCategory(int id, Category category) {
-        if (categoryRepository.existsById(id)) {
-            category.setId(id);
-            return categoryRepository.save(category);
-        }
-        throw new RuntimeException("Category not found");
+       Category existingCategory = categoryRepository.findById(id)
+               .orElseThrow(() -> new RuntimeException("Category not found"));
+
+       if (category.getName() != null) {
+           existingCategory.setName(category.getName());
+       }
+       if (category.getDescription() != null) {
+           existingCategory.setDescription(category.getDescription());
+       }
+
+       return categoryRepository.save(existingCategory);
     }
 
     public void deleteCategory(int id) {
