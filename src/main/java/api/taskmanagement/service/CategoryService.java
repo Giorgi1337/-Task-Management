@@ -1,5 +1,6 @@
 package api.taskmanagement.service;
 
+import api.taskmanagement.exception.CategoryNotFoundException;
 import api.taskmanagement.model.Category;
 import api.taskmanagement.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +20,12 @@ public class CategoryService {
 
     public Category getCategoryById(int id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
     }
 
     public Category updateCategory(int id, Category category) {
        Category existingCategory = categoryRepository.findById(id)
-               .orElseThrow(() -> new RuntimeException("Category not found"));
+               .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
 
        if (category.getName() != null) {
            existingCategory.setName(category.getName());
@@ -37,6 +38,9 @@ public class CategoryService {
     }
 
     public void deleteCategory(int id) {
+        if (!categoryRepository.existsById(id))
+            throw new CategoryNotFoundException("Category not found with id: " + id);
+
         categoryRepository.deleteById(id);
     }
 

@@ -1,5 +1,6 @@
 package api.taskmanagement.service;
 
+import api.taskmanagement.exception.UserNotFoundException;
 import api.taskmanagement.model.Task;
 import api.taskmanagement.model.User;
 import api.taskmanagement.repository.UserRepository;
@@ -22,13 +23,13 @@ public class UserService {
 
     public User getUserById(int id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Transactional
     public User updateUser(int id, User user) {
        User existingUser = userRepository.findById(id)
-               .orElseThrow(() -> new RuntimeException("User not found"));
+               .orElseThrow(() -> new UserNotFoundException("User not found"));
 
        existingUser.setUsername(user.getUsername());
        existingUser.setEmail(user.getEmail());
@@ -47,6 +48,9 @@ public class UserService {
     }
 
     public void deleteUser(int id) {
+        if (!userRepository.existsById(id))
+            throw new UserNotFoundException("User with ID " + id + " not found");
+
         userRepository.deleteById(id);
     }
 

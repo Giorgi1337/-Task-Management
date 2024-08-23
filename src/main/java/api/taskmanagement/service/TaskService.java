@@ -1,5 +1,6 @@
 package api.taskmanagement.service;
 
+import api.taskmanagement.exception.TaskNotFoundException;
 import api.taskmanagement.model.Task;
 import api.taskmanagement.model.TaskStatus;
 import api.taskmanagement.repository.TaskRepository;
@@ -24,7 +25,7 @@ public class TaskService {
     @Transactional
     public Task updateTask(int id, Task task) {
        Task existingTask = taskRepository.findById(id)
-               .orElseThrow(() -> new RuntimeException("Task not found"));
+               .orElseThrow(() -> new TaskNotFoundException("Task with ID " + id + " not found"));
 
        if (task.getTitle() != null) {
            existingTask.setTitle(task.getTitle());
@@ -47,7 +48,10 @@ public class TaskService {
 
     @Transactional
     public void deleteTask(int id) {
-        taskRepository.deleteById(id);
+       if (!taskRepository.existsById(id))
+           throw new TaskNotFoundException("Task with ID " + id + " not found");
+
+       taskRepository.deleteById(id);
     }
 
     public Page<Task> getTasks(Pageable pageable) {

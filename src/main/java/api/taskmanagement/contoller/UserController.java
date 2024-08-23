@@ -1,8 +1,10 @@
 package api.taskmanagement.contoller;
 
 
+import api.taskmanagement.dto.UserDTO;
 import api.taskmanagement.model.User;
 import api.taskmanagement.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +20,13 @@ public class UserController {
    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    public ResponseEntity<User> createUser(@Valid @RequestBody UserDTO userDTO) {
+       User user = new User();
+       user.setUsername(userDTO.getUsername());
+       user.setEmail(userDTO.getEmail());
+       User createdUser = userService.createUser(user);
+
+       return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @GetMapping("/{id}")
@@ -30,8 +36,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody UserDTO userDTO) {
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
         User updatedUser = userService.updateUser(id, user);
+
         return ResponseEntity.ok(updatedUser);
     }
 
