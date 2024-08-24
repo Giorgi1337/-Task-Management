@@ -5,6 +5,8 @@ import api.taskmanagement.exception.CategoryNotFoundException;
 import api.taskmanagement.model.Category;
 import api.taskmanagement.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,8 +42,8 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public Page<Category> getAllCategories(Pageable pageable) {
+        return categoryRepository.findAll(pageable);
     }
 
     private Category mapDtoToEntity(CategoryDTO categoryDTO) {

@@ -8,7 +8,9 @@ import api.taskmanagement.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,10 +51,21 @@ public class TaskController {
 
     @GetMapping
     public ResponseEntity<Page<Task>> getTasksByStatus(
-            @RequestParam TaskStatus status,
-            Pageable pageable) {
+            @RequestParam(required = false) TaskStatus status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
 
-        Page<Task> tasks = taskService.getTasksByStatus(status, pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
+
+        Page<Task> tasks;
+        if (status != null) {
+            tasks = taskService.getTasksByStatus(status, pageable);
+        } else {
+            tasks = taskService.getTasks(pageable);
+        }
+
         return ResponseEntity.ok(tasks);
     }
 }
