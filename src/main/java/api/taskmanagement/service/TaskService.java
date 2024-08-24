@@ -1,5 +1,6 @@
 package api.taskmanagement.service;
 
+import api.taskmanagement.dto.TaskDTO;
 import api.taskmanagement.exception.TaskNotFoundException;
 import api.taskmanagement.model.Task;
 import api.taskmanagement.model.TaskStatus;
@@ -18,31 +19,17 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
 
-    public Task createTask(Task task) {
+    public Task createTask(TaskDTO taskDTO) {
+        Task task = mapDtoToEntity(taskDTO);
         return taskRepository.save(task);
     }
 
     @Transactional
-    public Task updateTask(int id, Task task) {
+    public Task updateTask(int id, TaskDTO taskDTO) {
        Task existingTask = taskRepository.findById(id)
                .orElseThrow(() -> new TaskNotFoundException("Task with ID " + id + " not found"));
 
-       if (task.getTitle() != null) {
-           existingTask.setTitle(task.getTitle());
-       }
-       if (task.getDescription() != null) {
-           existingTask.setDescription(task.getDescription());
-       }
-       if (task.getStatus() != null) {
-           existingTask.setStatus(task.getStatus());
-       }
-       if (task.getPriority() != null) {
-           existingTask.setPriority(task.getPriority());
-       }
-       if (task.getDueDate() != null) {
-           existingTask.setDueDate(task.getDueDate());
-       }
-
+       updateEntityFromDto(existingTask, taskDTO);
        return taskRepository.save(existingTask);
     }
 
@@ -62,4 +49,31 @@ public class TaskService {
         return taskRepository.findByStatus(status);
     }
 
+    private Task mapDtoToEntity(TaskDTO taskDTO) {
+        Task task = new Task();
+        task.setTitle(taskDTO.getTitle());
+        task.setDescription(taskDTO.getDescription());
+        task.setStatus(taskDTO.getStatus());
+        task.setPriority(taskDTO.getPriority());
+        task.setDueDate(taskDTO.getDueDate());
+        return task;
+    }
+
+    private void updateEntityFromDto(Task existingTask, TaskDTO taskDTO) {
+        if (taskDTO.getTitle() != null) {
+            existingTask.setTitle(taskDTO.getTitle());
+        }
+        if (taskDTO.getDescription() != null) {
+            existingTask.setDescription(taskDTO.getDescription());
+        }
+        if (taskDTO.getStatus() != null) {
+            existingTask.setStatus(taskDTO.getStatus());
+        }
+        if (taskDTO.getPriority() != null) {
+            existingTask.setPriority(taskDTO.getPriority());
+        }
+        if (taskDTO.getDueDate() != null) {
+            existingTask.setDueDate(taskDTO.getDueDate());
+        }
+    }
 }

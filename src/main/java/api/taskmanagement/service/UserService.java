@@ -1,5 +1,6 @@
 package api.taskmanagement.service;
 
+import api.taskmanagement.dto.UserDTO;
 import api.taskmanagement.exception.UserNotFoundException;
 import api.taskmanagement.model.Task;
 import api.taskmanagement.model.User;
@@ -17,7 +18,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User createUser(User user) {
+    public User createUser(UserDTO userDTO) {
+        User user = mapDtoToEntity(userDTO);
         return userRepository.save(user);
     }
 
@@ -27,23 +29,11 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(int id, User user) {
+    public User updateUser(int id, UserDTO userDTO) {
        User existingUser = userRepository.findById(id)
                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-       existingUser.setUsername(user.getUsername());
-       existingUser.setEmail(user.getEmail());
-
-       existingUser.getTasks().clear();
-       if (user.getTasks() != null) {
-           existingUser.getTasks().addAll(user.getTasks());
-
-           for (Task task : user.getTasks()) {
-               task.setAssignee(existingUser);
-           }
-
-       }
-
+       updateEntityFromDto(existingUser, userDTO);
        return userRepository.save(existingUser);
     }
 
@@ -56,5 +46,21 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    private User mapDtoToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        return user;
+    }
+
+    private void updateEntityFromDto(User user, UserDTO userDTO) {
+        if (userDTO.getUsername() != null) {
+            user.setUsername(userDTO.getUsername());
+        }
+        if (userDTO.getEmail() != null) {
+            user.setEmail(userDTO.getEmail());
+        }
     }
 }

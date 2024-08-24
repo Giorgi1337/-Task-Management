@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,13 +21,14 @@ public class UserController {
    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody UserDTO userDTO) {
-       User user = new User();
-       user.setUsername(userDTO.getUsername());
-       user.setEmail(userDTO.getEmail());
-       User createdUser = userService.createUser(user);
-
-       return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+    public ResponseEntity<Map<String, Object>> createUser(@Valid @RequestBody UserDTO userDTO) {
+        User createdUser = userService.createUser(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                Map.of(
+                    "message", "User successfully created",
+                    "user", createdUser
+                )
+        );
     }
 
     @GetMapping("/{id}")
@@ -36,19 +38,24 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody UserDTO userDTO) {
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        User updatedUser = userService.updateUser(id, user);
-
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<Map<String, Object>> updateUser(@PathVariable int id, @Valid @RequestBody UserDTO userDTO) {
+        User updatedUser = userService.updateUser(id, userDTO);
+        return ResponseEntity.ok(
+                Map.of(
+                    "message", "User successfully updated",
+                    "user", updatedUser
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable int id) {
         userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(
+                Map.of(
+                    "message", "User successfully deleted"
+                )
+        );
     }
 
     @GetMapping

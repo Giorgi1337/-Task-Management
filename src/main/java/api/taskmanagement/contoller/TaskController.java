@@ -1,9 +1,11 @@
 package api.taskmanagement.contoller;
 
 
+import api.taskmanagement.dto.TaskDTO;
 import api.taskmanagement.model.Task;
 import api.taskmanagement.model.TaskStatus;
 import api.taskmanagement.service.TaskService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,21 +29,22 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task) {
-        Task createdTask = taskService.createTask(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
+    public ResponseEntity<String> createTask(@Valid @RequestBody TaskDTO taskDTO) {
+        Task task = taskService.createTask(taskDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("Task with ID " + task.getId() + " was successfully created.");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable int id, @RequestBody Task task) {
-        Task updatedTask = taskService.updateTask(id, task);
-        return ResponseEntity.ok(updatedTask);
+    public ResponseEntity<String> updateTask(@PathVariable int id, @Valid @RequestBody TaskDTO taskDTO) {
+        Task updatedTask = taskService.updateTask(id, taskDTO);
+        return ResponseEntity.ok("Task with ID " + updatedTask.getId() + " was successfully updated.");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable int id) {
+    public ResponseEntity<String> deleteTask(@PathVariable int id) {
         taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Task with ID " + id + " was successfully deleted.");
     }
 
     @GetMapping

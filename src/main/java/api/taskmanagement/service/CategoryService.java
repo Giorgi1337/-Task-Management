@@ -1,5 +1,6 @@
 package api.taskmanagement.service;
 
+import api.taskmanagement.dto.CategoryDTO;
 import api.taskmanagement.exception.CategoryNotFoundException;
 import api.taskmanagement.model.Category;
 import api.taskmanagement.repository.CategoryRepository;
@@ -14,7 +15,8 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public Category createCategory(Category category) {
+    public Category createCategory(CategoryDTO categoryDTO) {
+        Category category = mapDtoToEntity(categoryDTO);
         return categoryRepository.save(category);
     }
 
@@ -23,17 +25,11 @@ public class CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
     }
 
-    public Category updateCategory(int id, Category category) {
+    public Category updateCategory(int id, CategoryDTO categoryDTO) {
        Category existingCategory = categoryRepository.findById(id)
                .orElseThrow(() -> new CategoryNotFoundException("Category not found with id: " + id));
 
-       if (category.getName() != null) {
-           existingCategory.setName(category.getName());
-       }
-       if (category.getDescription() != null) {
-           existingCategory.setDescription(category.getDescription());
-       }
-
+       updateEntityFromDto(existingCategory, categoryDTO);
        return categoryRepository.save(existingCategory);
     }
 
@@ -46,5 +42,21 @@ public class CategoryService {
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
+    }
+
+    private Category mapDtoToEntity(CategoryDTO categoryDTO) {
+        Category category = new Category();
+        category.setName(categoryDTO.getName());
+        category.setDescription(categoryDTO.getDescription());
+        return category;
+    }
+
+    private void updateEntityFromDto(Category category, CategoryDTO categoryDTO) {
+        if (categoryDTO.getName() != null) {
+            category.setName(categoryDTO.getName());
+        }
+        if (categoryDTO.getDescription() != null) {
+            category.setDescription(categoryDTO.getDescription());
+        }
     }
 }
