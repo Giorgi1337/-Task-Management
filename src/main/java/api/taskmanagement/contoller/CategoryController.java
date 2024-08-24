@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,10 +24,14 @@ public class CategoryController {
    private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<String> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<Map<String, Object>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         Category createdCategory = categoryService.createCategory(categoryDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Category successfully created with ID: " + createdCategory.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                Map.of(
+                        "message", "Category was successfully created",
+                        "category", createdCategory
+                )
+        );
     }
 
     @GetMapping("/{id}")
@@ -37,15 +41,24 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateCategory(@PathVariable int id, @Valid @RequestBody CategoryDTO categoryDTO) {
+    public ResponseEntity<Map<String, Object>> updateCategory(@PathVariable int id, @Valid @RequestBody CategoryDTO categoryDTO) {
         Category updatedCategory = categoryService.updateCategory(id, categoryDTO);
-        return ResponseEntity.ok("Category successfully updated with ID: " + updatedCategory.getId());
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "Category was successfully updated",
+                        "category", updatedCategory
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable int id) {
+    public ResponseEntity<Map<String, String>> deleteCategory(@PathVariable int id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.ok("Category successfully deleted with ID: " + id);
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "Category was successfully deleted"
+                )
+        );
     }
 
     @GetMapping

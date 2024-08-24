@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,22 +31,35 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createTask(@Valid @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<Map<String, Object>> createTask(@Valid @RequestBody TaskDTO taskDTO) {
         Task task = taskService.createTask(taskDTO);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("Task with ID " + task.getId() + " was successfully created.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                Map.of(
+                        "message", "Task was successfully created.",
+                        "task", task
+                )
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateTask(@PathVariable int id, @Valid @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<Map<String, Object>> updateTask(@PathVariable int id, @Valid @RequestBody TaskDTO taskDTO) {
         Task updatedTask = taskService.updateTask(id, taskDTO);
-        return ResponseEntity.ok("Task with ID " + updatedTask.getId() + " was successfully updated.");
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "Task was successfully updated.",
+                        "task", updatedTask
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable int id) {
+    public ResponseEntity<Map<String, Object>> deleteTask(@PathVariable int id) {
         taskService.deleteTask(id);
-        return ResponseEntity.ok("Task with ID " + id + " was successfully deleted.");
+        return ResponseEntity.ok(
+                Map.of(
+                        "message", "Task was successfully deleted."
+                )
+        );
     }
 
     @GetMapping

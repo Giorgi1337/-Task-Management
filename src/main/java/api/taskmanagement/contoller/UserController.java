@@ -28,7 +28,7 @@ public class UserController {
         User createdUser = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 Map.of(
-                    "message", "User successfully created",
+                    "message", "User was successfully created",
                     "user", createdUser
                 )
         );
@@ -45,7 +45,7 @@ public class UserController {
         User updatedUser = userService.updateUser(id, userDTO);
         return ResponseEntity.ok(
                 Map.of(
-                    "message", "User successfully updated",
+                    "message", "User was successfully updated",
                     "user", updatedUser
                 )
         );
@@ -56,7 +56,7 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok(
                 Map.of(
-                    "message", "User successfully deleted"
+                    "message", "User was successfully deleted"
                 )
         );
     }
