@@ -8,10 +8,13 @@ import api.taskmanagement.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,8 +48,14 @@ public class TaskService {
         return taskRepository.findAll(pageable);
     }
 
-    public List<Task> getTasksByStatus(TaskStatus status) {
-        return taskRepository.findByStatus(status);
+    public Page<Task> getTasksByStatus(TaskStatus status, Pageable pageable) {
+        Page<Task> tasks = taskRepository.findByStatus(status, pageable);
+
+        List<Task> sortedTasks = tasks.stream()
+                .sorted(Comparator.comparing(task -> task.getStatus() == TaskStatus.TO_DO ? 0 : 1))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(sortedTasks, pageable, tasks.getTotalElements());
     }
 
     private Task mapDtoToEntity(TaskDTO taskDTO) {

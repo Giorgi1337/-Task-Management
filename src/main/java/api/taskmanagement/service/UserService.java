@@ -2,11 +2,12 @@ package api.taskmanagement.service;
 
 import api.taskmanagement.dto.UserDTO;
 import api.taskmanagement.exception.UserNotFoundException;
-import api.taskmanagement.model.Task;
 import api.taskmanagement.model.User;
 import api.taskmanagement.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,8 +45,8 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     private User mapDtoToEntity(UserDTO userDTO) {

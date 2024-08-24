@@ -48,8 +48,11 @@ public class TaskController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getTasksByStatus(@RequestParam TaskStatus status) {
-        List<Task> tasks = taskService.getTasksByStatus(status);
+    public ResponseEntity<Page<Task>> getTasksByStatus(
+            @RequestParam TaskStatus status,
+            Pageable pageable) {
+
+        Page<Task> tasks = taskService.getTasksByStatus(status, pageable);
         return ResponseEntity.ok(tasks);
     }
 }
